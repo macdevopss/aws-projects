@@ -1,20 +1,18 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: |
   This CloudFormation Template was written for running Kittens Carousel Static Website on EC2.
-  Kittens Carousel Static Website will be deployed on Amazon Linux 2023 EC2 Instance with custom
-  security group which allows http connections on port 80 and ssh port 22 from anywhere. Kittens Carousel Static Website
-  is downloaded from my Public Github repository, then deployed on Apache Web Server
+  It uses Amazon Linux 2 (compatible with t2.micro Free Tier) and deploys the website from a public GitHub repository.
 
 Parameters:
   keypair:
-    Description: first_key
+    Description: Choose your keypair
     Type: AWS::EC2::KeyPair::KeyName
-    Default: okt-aws
+    Default: first_key
 
   ParameterName:
-    Description: Choose your imageid
+    Description: Choose your imageid (Amazon Linux 2)
     Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
-    Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-6.1-arm64
+    Default: /aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2
 
 Resources:
   mySecGrp:
@@ -36,7 +34,7 @@ Resources:
     Type: AWS::EC2::Instance
     Properties:
       ImageId: !Ref ParameterName
-      InstanceType: t3.micro
+      InstanceType: t2.micro
       KeyName: !Ref keypair
       SecurityGroupIds:
         - !Ref mySecGrp
@@ -45,8 +43,8 @@ Resources:
           Value: !Sub Web Server of ${AWS::StackName}
       UserData: !Base64 |
         #!/bin/bash
-        dnf update -y
-        dnf install httpd wget -y
+        yum update -y
+        yum install -y httpd wget
         FOLDER="https://raw.githubusercontent.com/macdevopss/aws-projects/main/101-kittens-carousel-static-website-ec2/static-web"
         cd /var/www/html/
         wget ${FOLDER}/index.html
@@ -60,6 +58,5 @@ Outputs:
   WebSiteURL:
     Description: URL of website
     Value: !Sub 
-  - "http://${PublicDNS}"
-  - PublicDNS: !GetAtt mywebserver.PublicDnsName
-
+      - "http://${PublicDNS}"
+      - PublicDNS: !GetAtt mywebserver.PublicDnsName
