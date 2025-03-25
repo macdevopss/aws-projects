@@ -23,12 +23,6 @@ It features an interactive kitten image carousel and is designed to demonstrate 
 - Static website files pulled directly from GitHub repo
 - Website becomes publicly available via EC2 Public DNS
 
----
-
-## 📸 Live Project Snapshot
-
-> ![Kittens Carousel Screenshot](./project-snapshot.png)  
-(*You can take your own screenshot by visiting the EC2 Public DNS after deployment.*)
 
 ---
 
